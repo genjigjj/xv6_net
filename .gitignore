@@ -1,0 +1,20 @@
+*~
+_*
+*.o
+*.d
+*.asm
+*.sym
+*.img
+*.pcap
+vectors.S
+bootblock
+entryother
+initcode
+initcode.out
+kernel
+kernelmemfs
+mkfs
+.gdbinit
+
+# Project exclude paths
+/cmake-build-debug/
