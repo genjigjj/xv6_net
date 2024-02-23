@@ -36,8 +36,8 @@
 #define TCP_FLG_ISSET(x, y) ((x & 0x3f) & (y))
 
 struct tcp_hdr {
-    uint16_t src;
-    uint16_t dst;
+    uint16_t src; // 源端口
+    uint16_t dst; // 目的端口
     uint32_t seq;
     uint32_t ack;
     uint8_t  off;

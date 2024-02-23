@@ -14,9 +14,10 @@
 
 extern const uint8_t ETHERNET_ADDR_ANY[ETHERNET_ADDR_LEN];
 extern const uint8_t ETHERNET_ADDR_BROADCAST[ETHERNET_ADDR_LEN];
+// 以太网帧
 
 struct ethernet_hdr {
-    uint8_t dst[ETHERNET_ADDR_LEN];
-    uint8_t src[ETHERNET_ADDR_LEN];
-    uint16_t type;
+    uint8_t dst[ETHERNET_ADDR_LEN]; // 以太网帧的目的 MAC 地址
+    uint8_t src[ETHERNET_ADDR_LEN]; // 以太网帧的源 MAC 地址
+    uint16_t type; // 以太网帧数据部分的协议类型，IPv4：0x0800 ARP：0x0806 IPv6：0x86DD
 };

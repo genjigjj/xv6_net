@@ -117,8 +117,8 @@ struct tx_desc
 {
   uint64_t addr;
   uint16_t length;
-  uint8_t cso;
-  uint8_t cmd;
+  uint8_t cso; // 表示数据包的校验和偏移量（Checksum Offset）
+  uint8_t cmd; // 描述符的命令类型
   uint8_t status;
   uint8_t css;
   uint16_t special;
@@ -131,10 +131,10 @@ struct tx_desc
 // [E1000 3.2.3]
 struct rx_desc
 {
-  uint64_t addr;       /* Address of the descriptor's data buffer */
-  uint16_t length;     /* Length of data DMAed into data buffer */
-  uint16_t csum;       /* Packet checksum */
-  uint8_t status;      /* Descriptor status */
-  uint8_t errors;      /* Descriptor Errors */
+  uint64_t addr;       /* Address of the descriptor's data buffer 描述符的数据缓冲区的地址 */
+  uint16_t length;     /* Length of data DMAed into data buffer 数据传输到数据缓冲区中的长度 */
+  uint16_t csum;       /* Packet checksum 数据包的校验和*/
+  uint8_t status;      /* Descriptor status 描述符的状态*/
+  uint8_t errors;      /* Descriptor Errors 描述符的错误信息*/
   uint16_t special;
 };

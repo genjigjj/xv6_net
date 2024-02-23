@@ -15,13 +15,13 @@
 #define TX_RING_SIZE 16
 
 struct e1000 {
-    uint32_t mmio_base;
-    struct rx_desc rx_ring[RX_RING_SIZE] __attribute__((aligned(16)));;
-    struct tx_desc tx_ring[TX_RING_SIZE] __attribute__((aligned(16)));;
-    uint8_t addr[6];
-    uint8_t irq;
-    struct netdev *netdev;
-    struct e1000 *next;
+    uint32_t mmio_base; // 用于存储 MMIO（Memory Mapped Input/Output）基地址
+    struct rx_desc rx_ring[RX_RING_SIZE] __attribute__((aligned(16)));; //用于存储接收数据的描述符
+    struct tx_desc tx_ring[TX_RING_SIZE] __attribute__((aligned(16)));; // 用于存储发送数据的描述符
+    uint8_t addr[6]; // 存储MAC地址
+    uint8_t irq; // 存储中断请求号
+    struct netdev *netdev; // 表示与该 e1000 设备相关联的网络设备
+    struct e1000 *next; // 指向下一个 e1000 设备的指针，用于构建链表
 };
 
 static struct e1000 *devices;
@@ -72,7 +72,7 @@ e1000_resolve_mmio_base(struct pci_func *pcif)
     }
     return mmio_base;
 }
-
+// Intel E1000 网卡的接收（RX）初始化功能。具体来说，它通过一系列寄存器的设置和数据缓冲区的分配和初始化，使网卡能够开始接收网络数据包。
 static void
 e1000_rx_init(struct e1000 *dev)
 {
@@ -104,7 +104,7 @@ e1000_rx_init(struct e1000 *dev)
         0)
     );
 }
-
+// Intel E1000 网卡的发送（TX）初始化功能。具体来说，它通过一系列寄存器的设置和数据缓冲区的分配和初始化，使网卡能够开始发送网络数据包。
 static void
 e1000_tx_init(struct e1000 *dev)
 {
@@ -267,7 +267,7 @@ e1000_init(struct pci_func *pcif)
     dev->mmio_base = e1000_resolve_mmio_base(pcif);
     assert(dev->mmio_base);
     cprintf("[e1000] mmio_base=0x%08x\n", dev->mmio_base);
-    // Read HW address from EEPROM
+    // Read HW address from EEPROM 从 Intel E1000 网卡的 EEPROM 中读取 MAC 地址并存储到指定的内存区域中。EEPROM是可擦写可编程只读存储器
     e1000_read_addr_from_eeprom(dev, dev->addr);
     cprintf("[e1000] addr=%02x:%02x:%02x:%02x:%02x:%02x\n", dev->addr[0], dev->addr[1], dev->addr[2], dev->addr[3], dev->addr[4], dev->addr[5]);
     // Register I/O APIC

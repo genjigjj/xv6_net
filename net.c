@@ -120,7 +120,7 @@ netdev_get_netif(struct netdev *dev, int family)
     }
     return NULL;
 }
-
+// 网络协议栈中注册一个新的协议处理函数，从而实现对特定类型数据包的处理
 int
 netproto_register(unsigned short type, void (*handler)(uint8_t *packet, size_t plen, struct netdev *dev))
 {
