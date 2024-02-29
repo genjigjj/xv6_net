@@ -38,13 +38,13 @@ trap(struct trapframe *tf)
 {
   if(tf->trapno == T_SYSCALL){
     if(myproc()->killed) {
-        cprintf("trapno: %d, pid: %d, name %s be killed\n", tf->trapno, myproc()->pid, myproc()->name);
+        cprintf("trapno: %d, pid: %d, name: %s be killed\n", tf->trapno, myproc()->pid, myproc()->name);
         exit();
     }
     myproc()->tf = tf;
     syscall();
     if(myproc()->killed) {
-        cprintf("trapno: %d, pid: %d, name %s be killed\n", tf->trapno, myproc()->pid, myproc()->name);
+        cprintf("trapno: %d, pid: %d, name: %s be killed\n", tf->trapno, myproc()->pid, myproc()->name);
         exit();
     }
     return;
@@ -106,7 +106,7 @@ trap(struct trapframe *tf)
   // (If it is still executing in the kernel, let it keep running
   // until it gets to the regular system call return.)
   if(myproc() && myproc()->killed && (tf->cs&3) == DPL_USER){
-      cprintf("trapno: %d, pid: %d, name %s be killed\n", tf->trapno, myproc()->pid, myproc()->name);
+      cprintf("trapno: %d, pid: %d, name: %s be killed\n", tf->trapno, myproc()->pid, myproc()->name);
       exit();
   }
 
@@ -118,7 +118,7 @@ trap(struct trapframe *tf)
 
   // Check if the process has been killed since we yielded
   if(myproc() && myproc()->killed && (tf->cs&3) == DPL_USER) {
-      cprintf("trapno: %d, pid: %d, name %s be killed\n", tf->trapno, myproc()->pid, myproc()->name);
+      cprintf("trapno: %d, pid: %d, name: %s be killed\n", tf->trapno, myproc()->pid, myproc()->name);
       exit();
   }
 }
