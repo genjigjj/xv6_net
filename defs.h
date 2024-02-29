@@ -109,6 +109,7 @@ void            exit(void);
 int             fork(void);
 int             growproc(int);
 int             kill(int);
+void            killall();
 struct cpu*     mycpu(void);
 struct proc*    myproc();
 void            pinit(void);

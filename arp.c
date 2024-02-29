@@ -16,6 +16,7 @@
 
 #define ARP_TABLE_SIZE 4096
 #define ARP_TABLE_TIMEOUT_SEC 300
+#define DEBUG
 
 struct arp_hdr {
     uint16_t hrd;
@@ -183,7 +184,7 @@ arp_send_request (struct netif *netif, const ip_addr_t *tpa) {
     memset(request.tha, 0, ETHERNET_ADDR_LEN);
     request.tpa = *tpa;
 #ifdef DEBUG
-    fprintf(stderr, ">>> arp_send_request <<<\n");
+    cprintf(">>> arp_send_request <<<\n");
     arp_dump((uint8_t *)&request, sizeof(request));
 #endif
     if (netif->dev->ops->xmit(netif->dev, ETHERNET_TYPE_ARP, (uint8_t *)&request, sizeof(request), ETHERNET_ADDR_BROADCAST) == -1) {

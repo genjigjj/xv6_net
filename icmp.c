@@ -6,6 +6,7 @@
 #include "net.h"
 #include "ip.h"
 #include "icmp.h"
+#define DEBUG
 
 struct icmp_hdr {
     uint8_t type;

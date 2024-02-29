@@ -5,6 +5,8 @@
 #include "defs.h"
 #include "net.h"
 #include "ethernet.h"
+#define DEBUG
+
 
 const uint8_t ETHERNET_ADDR_ANY[ETHERNET_ADDR_LEN] = {"\x00\x00\x00\x00\x00\x00"};
 const uint8_t ETHERNET_ADDR_BROADCAST[ETHERNET_ADDR_LEN] = {"\xff\xff\xff\xff\xff\xff"};

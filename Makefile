@@ -322,9 +322,8 @@ docker-run:
 	docker run -it --name xv6-net --rm --device=/dev/net/tun --cap-add=NET_ADMIN xv6-net make run
 
 run: xv6.img fs.img
-	ip tuntap add mode tap name tap0
-	ip addr add 172.16.100.1/24 dev tap0
-	ip link set tap0 up
+	ip addr add 192.168.1.1/24 dev tap0
 	$(QEMU) -nographic $(QEMUOPTS)
 
 .PHONY: dist-test dist docker-build docker-run run
+

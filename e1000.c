@@ -13,6 +13,7 @@
 
 #define RX_RING_SIZE 16
 #define TX_RING_SIZE 16
+#define DEBUG
 
 struct e1000 {
     uint32_t mmio_base; // 用于存储 MMIO（Memory Mapped Input/Output）基地址

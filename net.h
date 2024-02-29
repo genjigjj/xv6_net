@@ -27,7 +27,7 @@ struct netdev;
 
 struct netif {
     struct netif *next;
-    uint8_t family;
+    uint8_t family; // 表示网络接口的类型，例如 IPv4 或 IPv6
     struct netdev *dev;
     /* Depends on implementation of protocols. */
 };

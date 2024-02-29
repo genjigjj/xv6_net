@@ -61,12 +61,11 @@ This project ported it to the xv6 kernel.
 
 *Build & Run*
 ```
-$ sudo make docker-build
-$ sudo make docker-run
+$ sudo make run
 
-...(xv6-net starts on qemu in the container)...
+...(xv6-net starts on qemu)...
 
-$ ifconfig net1 172.16.100.2 netmask 255.255.255.0
+$ ifconfig net1 192.168.1.2 netmask 255.255.255.0
 $ ifconfig net1 up
 $ tcpechoserver
 Starting TCP Echo Server
@@ -81,12 +80,12 @@ waiting for connection...
 
 *Ping Test (at another terminal)*
 ```
-$ sudo docker exec -it xv6-net ping 172.16.100.2
+$ sudo ping 192.168.1.2
 ```
 
 *TCP Test (at another terminal)*
 ```
-$ sudo docker exec -it xv6-net nc 172.16.100.2 7
+$ sudo nc 192.168.1.2 7
 ```
 
 ## License

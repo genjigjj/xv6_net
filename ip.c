@@ -7,6 +7,8 @@
 #include "net.h"
 #include "ethernet.h"
 #include "ip.h"
+#define DEBUG
+
 
 #define IP_VERSION_IPV4 4
 

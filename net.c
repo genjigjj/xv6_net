@@ -5,6 +5,7 @@
 #include "defs.h"
 #include "net.h"
 #include "ip.h"
+#define DEBUG
 
 struct netproto {
     struct netproto *next;
@@ -85,7 +86,7 @@ netdev_receive(struct netdev *dev, uint16_t type, uint8_t *packet, unsigned int 
         }
     }
 }
-
+//
 int
 netdev_add_netif(struct netdev *dev, struct netif *netif)
 {

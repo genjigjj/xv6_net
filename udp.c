@@ -198,6 +198,7 @@ udp_api_bind (int soc, struct sockaddr *addr, int addrlen) {
             return -1;
         }
     }
+    // 检查重复的UDP连接，以确保不会重复使用相同的端口号和接口
     for (tmp = cb_table; tmp < array_tailof(cb_table); tmp++) {
         if (tmp->used && tmp != cb && (!iface || !tmp->iface || tmp->iface == iface) && tmp->port == sin->sin_port) {
             release(&udplock);
@@ -313,6 +314,7 @@ udp_api_sendto (int soc, uint8_t *buf, size_t len, struct sockaddr *addr, int ad
                     break;
                 }
             }
+            // 如果遍历完所有cb_table，说明该端口号未被指定给特定的接口（iface）使用，即找到空闲的端口号
             if (tmp == array_tailof(cb_table)) {
                 cb->port = hton16((uint16_t)p);
                 break;

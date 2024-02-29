@@ -4,10 +4,15 @@
 #include "types.h"
 #include "defs.h"
 #include "spinlock.h"
+#include "mmu.h"
+#include "param.h"
+#include "proc.h"
 #include "common.h"
 #include "net.h"
 #include "ip.h"
 #include "socket.h"
+
+
 
 #define TCP_CB_TABLE_SIZE 16
 #define TCP_SOURCE_PORT_MIN 49152
@@ -670,6 +675,10 @@ tcp_api_accept (int soc, struct sockaddr *addr, int *addrlen) {
         return -1;
     }
     while ((entry = queue_pop(&cb->backlog)) == NULL) {
+        if(myproc()->killed){
+            release(&tcplock);
+            return -1;
+        }
         sleep(cb, &tcplock);
     }
     backlog = entry->data;
@@ -701,6 +710,10 @@ tcp_api_recv (int soc, uint8_t *buf, size_t size) {
         if (!TCP_CB_STATE_RX_ISREADY(cb)) {
             release(&tcplock);
             return 0;
+        }
+        if(myproc()->killed){
+            release(&tcplock);
+            return -1;
         }
         sleep(cb, &tcplock);
     }

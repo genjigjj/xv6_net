@@ -77,7 +77,7 @@ struct file *
 socketaccept(struct socket *s, struct sockaddr *addr, int *addrlen) {
     int adesc;
     struct file *f;
-    struct socket *as;
+    struct socket *as; // 表示"accept socket"的缩写，即表示接收到的套接字
     if (s->type != SOCK_STREAM)
         return NULL;
     f = filealloc();

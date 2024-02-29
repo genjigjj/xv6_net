@@ -473,6 +473,20 @@ wakeup(void *chan)
   release(&ptable.lock);
 }
 
+void killall() {
+    struct proc *p;
+    acquire(&ptable.lock);
+    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+        if(p->state == UNUSED || p == initproc)
+            continue;
+        if(p->state == SLEEPING)
+            p->state = RUNNABLE;
+        p->killed = 1;
+    }
+    release(&ptable.lock);
+}
+
+
 // Kill the process with the given pid.
 // Process won't exit until it returns
 // to user space (see trap in trap.c).
