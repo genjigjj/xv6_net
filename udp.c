@@ -8,6 +8,9 @@
 #include "net.h"
 #include "ip.h"
 #include "socket.h"
+#include "mmu.h"
+#include "param.h"
+#include "proc.h"
 
 #define UDP_CB_TABLE_SIZE 16
 #define UDP_SOURCE_PORT_MIN 49152
@@ -262,6 +265,10 @@ udp_api_recvfrom (int soc, uint8_t *buf, size_t size, struct sockaddr *addr, int
         return -1;
     }
     while (!(entry = queue_pop(&cb->queue))) {
+        if(myproc()->killed){
+            release(&udplock);
+            return -1;
+        }
         sleep(cb, &udplock);
     }
     release(&udplock);
