@@ -207,6 +207,7 @@ NET_UPROGS=\
     _ifconfig\
 	_tcpechoserver\
 	_udpechoserver\
+	_tcpsend\
 
 UPROGS += $(NET_UPROGS)
 
