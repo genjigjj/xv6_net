@@ -58,7 +58,7 @@ This project ported it to the xv6 kernel.
 - [ ] DNS stub resolver
 
 ## Tutorial
-
+host run cmd: ip addr add 192.168.1.1/24 dev tap0
 *Build & Run*
 ```
 $ sudo make run

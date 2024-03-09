@@ -123,6 +123,13 @@ xchg(volatile uint *addr, uint newval)
   uint result;
 
   // The + in "+m" denotes a read-modify-write operand.
+  // TEMP := DEST;
+  // DEST := SRC;
+  // SRC := TEMP;
+  // temp = *addr
+  // *addr = newval;
+  // result= temp;
+  // newval前面的数字约束表示与第n个操作表达式使用相同的寄存器/内存
   asm volatile("lock; xchgl %0, %1" :
                "+m" (*addr), "=a" (result) :
                "1" (newval) :

@@ -15,6 +15,6 @@ struct netif_ip {
     ip_addr_t unicast; // 单播地址，即IP地址
     ip_addr_t netmask; // 子网掩码
     ip_addr_t network; // 网络接口所在网络的网络地址，与掩码运算后的地址
-    ip_addr_t broadcast; // 广播地址
+    ip_addr_t broadcast; // 广播地址，一个网络的广播地址通常是这个网络的子网的最大地址，即将网络地址中所有主机位设置为 1 的地址
     ip_addr_t gateway; // 默认网关地址
 };

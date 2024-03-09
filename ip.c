@@ -29,16 +29,20 @@ struct ip_protocol {
 };
 
 struct ip_hdr {
-    uint8_t vhl;
-    uint8_t tos;
-    uint16_t len;
-    uint16_t id;
+    uint8_t vhl; // 用于存储IP版本号和头部长度
+    uint8_t tos; // 服务类型字段，指定服务质量要求：普通、优先、立即、闪电式、比闪电还闪电式
+    uint16_t len; // 表示IP数据报的总长度
+    uint16_t id; // 标识字段，用于唯一标识一个IP数据报
+    // 分段偏移量，用于分片和重组分段。前3bit控制IP分片和重组。
+    // 第二位DF（Don't Fragment）位，指示数据包是否可以被分片。
+    // 第三位是MF（More Fragments）位，指示数据包是否是分片的最后一片
+    // 偏移量字段占据了标志字段的后13位，用于指示当前分片在原始数据包中的位置。偏移量以 8 字节为单位计算，因此乘以8可以得到实际的字节偏移量。
     uint16_t offset;
-    uint8_t ttl;
-    uint8_t protocol;
-    uint16_t sum;
-    ip_addr_t src;
-    ip_addr_t dst;
+    uint8_t ttl; // 存活时间，指定数据包在网络中可以经过的最大路由器跳数
+    uint8_t protocol; // 协议字段，指定IP数据报中封装的协议类型
+    uint16_t sum; // 校验和字段，用于验证IP数据报的完整性
+    ip_addr_t src; //  源IP地址
+    ip_addr_t dst; //  目的IP地址
     uint8_t options[0];
 };
 
@@ -111,6 +115,7 @@ ip_dump (struct netif *netif, uint8_t *packet, size_t plen) {
 
 /*
  * IP ROUTING
+ * 新增网络接口时会新增一个路由信息，nexthop的地址为0
  */
 
 static int
@@ -144,12 +149,15 @@ ip_route_del (struct netif *netif) {
     return 0;
 }
 
+// 在路由表中查找最匹配给定目标 IP 地址的路由条目，并返回最佳匹配的路由。借助路由表中的网络地址、掩码和接口信息，函数可以确定数据包应该通过哪个路由发送
 static struct ip_route *
 ip_route_lookup (const struct netif *netif, const ip_addr_t *dst) {
     struct ip_route *route, *candidate = NULL;
 
     for (route = route_table; route < array_tailof(route_table); route++) {
+        // 判断目标 IP 地址是否与当前路由的网络地址相匹配（(*dst & route->netmask) == route->network）并且如果提供了网络接口参数 netif，则还需判断路由的网络接口是否匹配
         if (route->used && (*dst & route->netmask) == route->network && (!netif || route->netif == netif)) {
+            // 比较当前路由的掩码和候选路由的掩码大小，选择掩码更大（即子网范围更小）的路由作为候选
             if (!candidate || ntoh32(candidate->netmask) < ntoh32(route->netmask)) {
                 candidate = route;
             }
@@ -305,7 +313,9 @@ ip_rx (uint8_t *dgram, size_t dlen, struct netdev *dev) {
         cprintf("ip unknown interface.\n");
         return;
     }
+    // 首先检查数据包的目标地址是否不等于接口的单播地址
     if (hdr->dst != iface->unicast) {
+        // 如果数据包的目标地址不等于接口的广播地址，并且数据包的目标地址不等于 IP 地址的广播地址，丢弃该数据包
         if (hdr->dst != iface->broadcast && hdr->dst != IP_ADDR_BROADCAST) {
             /* for other host */
             return;
@@ -335,7 +345,7 @@ static int
 ip_tx_netdev (struct netif *netif, uint8_t *packet, size_t plen, const ip_addr_t *dst) {
     uint8_t ha[128] = {};
     ssize_t ret;
-
+    // 判断网络接口是否需要进行ARP地址解析
     if (!(netif->dev->flags & NETDEV_FLAG_NOARP)) {
         if (dst) {
             ret = arp_resolve(netif, dst, (void *)ha, packet, plen);
@@ -409,6 +419,7 @@ ip_tx (struct netif *netif, uint8_t protocol, const uint8_t *buf, size_t len, co
             src = &((struct netif_ip *)netif)->unicast;
         }
         netif = route->netif;
+        // 如果下一跳地址为空，目的地址就是要请求的ip地址
         nexthop = (ip_addr_t *)(route->nexthop ? &route->nexthop : dst);
     }
     id = ip_generate_id();

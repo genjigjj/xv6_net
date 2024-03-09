@@ -43,13 +43,13 @@
 struct tcp_hdr {
     uint16_t src; // 源端口
     uint16_t dst; // 目的端口
-    uint32_t seq;
-    uint32_t ack;
-    uint8_t  off;
-    uint8_t  flg;
-    uint16_t win;
-    uint16_t sum;
-    uint16_t urg;
+    uint32_t seq; // 序列号，占用 32 位，用来标识 TCP 报文中的数据段的起始位置
+    uint32_t ack; // 确认号，占用 32 位，用来确认对方已经接收到的数据段序号
+    uint8_t  off; // 数据偏移，占用 8 位，表示 TCP 报文头部的长度，通常以 4 字节为单位，即乘以 4 后表示 TCP 报文头部的长度
+    uint8_t  flg; // 控制标志位，占用 8 位，实际用6位。具体的标志位为：URG、ACK、PSH、RST、SYN、FIN
+    uint16_t win; // 窗口大小，占用 16 位，表示发送端还能接收多少字节的数据
+    uint16_t sum; // 校验和，占用 16 位，用来检测 TCP 报文在传输过程中是否出现错误
+    uint16_t urg; // 紧急指针，占用 16 位，表示紧急数据的位置
 };
 
 struct tcp_txq_entry {
@@ -74,20 +74,20 @@ struct tcp_cb {
         uint16_t port;
     } peer;
     struct {
-        uint32_t nxt;
-        uint32_t una;
+        uint32_t nxt; // 下一个要发送的序列号
+        uint32_t una; // 未确认的序列号
         uint16_t up;
         uint32_t wl1;
         uint32_t wl2;
         uint16_t wnd;
-    } snd;
-    uint32_t iss;
+    } snd;// 发送窗口相关信息，
+    uint32_t iss; // 初始发送序列号
     struct {
-        uint32_t nxt;
+        uint32_t nxt; // 下一个期望接收的序列号
         uint16_t up;
         uint16_t wnd;
-    } rcv;
-    uint32_t irs;
+    } rcv; // 接收窗口相关信息
+    uint32_t irs; // 初始接收序列号
     struct tcp_txq_head txq;
     uint8_t window[4096];
     struct tcp_cb *parent;
@@ -440,7 +440,7 @@ static void
 tcp_rx (uint8_t *segment, size_t len, ip_addr_t *src, ip_addr_t *dst, struct netif *iface) {
     struct tcp_hdr *hdr;
     uint32_t pseudo = 0;
-    struct tcp_cb *cb, *fcb = NULL, *lcb = NULL;
+    struct tcp_cb *cb, *fcb = NULL, *lcb = NULL; // fcb 监听状态的 TCP 控制块的指针，lcb 是指向监听状态的 TCP 控制块的指针
 
     if (*dst != ((struct netif_ip *)iface)->unicast) {
         return;
@@ -467,6 +467,7 @@ tcp_rx (uint8_t *segment, size_t len, ip_addr_t *src, ip_addr_t *dst, struct net
             }
         }
         else if ((!cb->iface || cb->iface == iface) && cb->port == hdr->dst) {
+            // 找到了与当前 TCP 报文匹配的 TCP 控制块
             if (cb->peer.addr == *src && cb->peer.port == hdr->src) {
                 break;
             }
@@ -587,7 +588,7 @@ tcp_api_connect (int soc, struct sockaddr *addr, int addrlen) {
     cb->peer.addr = sin->sin_addr;
     cb->peer.port = sin->sin_port;
     cb->rcv.wnd = sizeof(cb->window);
-    cb->iss = (uint32_t)random();
+    cb->iss = (uint32_t)random(); //  Initial Sequence Number（初始序列号）是 TCP 协议中用于建立连接时的一个重要参数。TCP 连接的建立需要双方交换一些控制信息，其中包括序列号。iss 即是 TCP 发起连接时选择的初始序列号
     tcp_tx(cb, cb->iss, 0, TCP_FLG_SYN, NULL, 0);
     cb->snd.nxt = cb->iss + 1;
     cb->state = TCP_CB_STATE_SYN_SENT;

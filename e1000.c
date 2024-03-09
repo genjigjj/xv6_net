@@ -199,6 +199,7 @@ e1000_rx(struct e1000 *dev)
     while (1) {
         uint32_t tail = (e1000_reg_read(dev, E1000_RDT)+1) % RX_RING_SIZE;
         struct rx_desc *desc = &dev->rx_ring[tail];
+        // 在没有接收到完整的数据包时，不进行后续的处理，直接退出
         if (!(desc->status & E1000_RXD_STAT_DD)) {
             /* EMPTY */
             break;
@@ -234,8 +235,10 @@ e1000intr(void)
 #ifdef DEBUG
     cprintf("[e1000] interrupt: etner\n");
 #endif
+    // 遍历所有网络设备接收数据
     for (dev = devices; dev; dev = dev->next) {
         icr = e1000_reg_read(dev, E1000_ICR);
+        // 检查icr中是否包含了接收定时器中断的标志位
         if (icr & E1000_ICR_RXT0) {
             e1000_rx(dev);
             // clear pending interrupts

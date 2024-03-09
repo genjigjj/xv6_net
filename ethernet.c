@@ -85,6 +85,7 @@ ethernet_rx_helper(struct netdev *dev, uint8_t *frame, size_t flen, void (*cb)(s
         return -1;
     }
     hdr = (struct ethernet_hdr *)frame;
+    // 如果设备的mac地址和以太网帧目的不一致，检查是否是广播地址，如果不是，丢弃该包
     if (memcmp(dev->addr, hdr->dst, ETHERNET_ADDR_LEN) != 0) {
         if (memcmp(ETHERNET_ADDR_BROADCAST, hdr->dst, ETHERNET_ADDR_LEN) != 0) {
             return -1;
